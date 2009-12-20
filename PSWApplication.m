@@ -192,8 +192,7 @@ static NSUInteger defaultImagePassThrough;
 		// Deactivate the application
 		[_application setActivationSetting:0x2 flag:NO]; // don't animate
 		[SBWSuspendingDisplayStack pushDisplay:_application];
-	}
-	restoreIconListFlag = NO;		
+	}	
 }
 
 - (void)activateWithAnimation:(BOOL)animation

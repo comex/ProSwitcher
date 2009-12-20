@@ -1,7 +1,6 @@
 #import "PSWResources.h"
 
 #import <CoreGraphics/CoreGraphics.h>
-BOOL restoreIconListFlag = NO;
 static NSMutableDictionary *imageCache;
 
 UIImage *PSWGetCachedImageResource(NSString *name, NSBundle *bundle)
