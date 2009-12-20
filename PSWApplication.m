@@ -8,6 +8,7 @@
 
 #import "PSWDisplayStacks.h"
 #import "PSWApplicationController.h"
+#import "PSWResources.h"
 
 CHDeclareClass(SBApplicationController);
 CHDeclareClass(SBApplicationIcon);
@@ -162,6 +163,7 @@ static NSUInteger defaultImagePassThrough;
 
 - (void)exit
 {
+	restoreIconListFlag = YES;	
 	if ([_displayIdentifier isEqualToString:@"com.apple.mobilephone"] || [_displayIdentifier isEqualToString:@"com.apple.mobilemail"] || [_displayIdentifier isEqualToString:@"com.apple.mobilesafari"] || [_displayIdentifier hasPrefix:@"com.apple.mobileipod"] || [_displayIdentifier isEqualToString:@"com.googlecode.mobileterminal"]) {
 		[ignoredRelaunchDisplayIdentifier release];
 		ignoredRelaunchDisplayIdentifier = [_displayIdentifier retain];
@@ -180,6 +182,7 @@ static NSUInteger defaultImagePassThrough;
 		[_application setActivationSetting:0x2 flag:NO]; // don't animate
 		[SBWSuspendingDisplayStack pushDisplay:_application];
 	}
+	restoreIconListFlag = NO;		
 }
 
 - (void)activateWithAnimation:(BOOL)animation

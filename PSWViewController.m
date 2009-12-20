@@ -55,7 +55,7 @@ static NSUInteger modifyZoomTransformCountDown;
 #define PSWSwipeToClose         YES
 #define PSWShowApplicationTitle YES
 #define PSWShowCloseButton      YES
-#define PSWShowEmptyText        YES
+#define PSWShowEmptyText        NO
 #define PSWRoundedCornerRadius  0.0f
 #define PSWTapsToActivate       2
 #define PSWSnapshotInset        40.0f
@@ -172,7 +172,7 @@ static NSUInteger modifyZoomTransformCountDown;
 		return;
 	if ([self isAnimating])
 		return;
-	
+	//restoreIconListFlag = YES;	
 	if (SBActive) {
 		BOOL newActive = ![self isActive];
 		[self setActive:newActive];
@@ -200,6 +200,7 @@ static NSUInteger modifyZoomTransformCountDown;
 		[snapshotPageView setFocusedApplication:[[PSWApplicationController sharedInstance] applicationWithDisplayIdentifier:activeDisplayIdentifier] animated:NO];
 		[event setHandled:YES];
 	}	
+	//restoreIconListFlag = NO;	
 }
 
 - (void)activator:(LAActivator *)activator abortEvent:(LAEvent *)event
@@ -343,6 +344,16 @@ CHMethod3(void, SBUIController, animateApplicationActivation, SBApplication *, a
 	CHSuper3(SBUIController, animateApplicationActivation, application, animateDefaultImage, animateDefaultImage, scatterIcons, scatterIcons && suppressIconScatter == 0);
 }
 
+CHMethod1(void, SBUIController, restoreIconList, BOOL, blah)
+{
+	NSLog(@"restoreIconList:%d (%d)", restoreIconListFlag, blah);
+	if(restoreIconListFlag) {
+		restoreIconListFlag = NO;
+		return;
+	}
+	return CHSuper1(SBUIController, restoreIconList, blah);
+}
+
 #pragma mark SpringBoard
 
 static BOOL shouldSuppressIconListScroll;
@@ -437,6 +448,7 @@ CHConstructor
 	CHLoadLateClass(SBIconListPageControl);
 	CHLoadLateClass(SBUIController);
 	CHHook3(SBUIController, animateApplicationActivation, animateDefaultImage, scatterIcons);
+	CHHook1(SBUIController, restoreIconList);
 	CHLoadLateClass(SBApplicationController);
 	CHLoadLateClass(SBIconModel);
 	CHLoadLateClass(SpringBoard);
