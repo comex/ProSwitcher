@@ -30,7 +30,7 @@ CHDeclareClass(SBSearchView);
 static PSWViewController *mainController;
 static NSInteger suppressIconScatter;
 static NSUInteger modifyZoomTransformCountDown;
-BOOL restoreIconListFlag = NO;
+static BOOL restoreIconListFlag = NO;
 
 #define SBActive ([SBWActiveDisplayStack topApplication] == nil)
 #define SBSharedInstance ((SpringBoard *) [UIApplication sharedApplication])
@@ -468,7 +468,6 @@ CHConstructor
 	CHHook0(SBApplication, activate);
 	CHLoadLateClass(SBIconListPageControl);
 	CHLoadLateClass(SBUIController);
-	CHHook1(SBUIController, restoreIconList);
 	CHHook3(SBUIController, animateApplicationActivation, animateDefaultImage, scatterIcons);
 	CHHook1(SBUIController, restoreIconList);
 	CHLoadLateClass(SBApplicationController);

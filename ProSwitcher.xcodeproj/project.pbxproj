@@ -57,7 +57,6 @@
 		94B298C210C2266400F64150 /* PSWViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSWViewController.m; sourceTree = "<group>"; };
 		94B298C310C2266400F64150 /* PSWViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSWViewController.h; sourceTree = "<group>"; };
 		94EEDE2C10D47425007133E9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		94EEDE3510D474AC007133E9 /* libactivator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libactivator.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -216,7 +215,6 @@
 		943D546310CCFA510007FAFF /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				94EEDE3510D474AC007133E9 /* libactivator.h */,
 				943D546410CCFA510007FAFF /* SpringBoard+Backgrounder.h */,
 				940499DF10DE37EC0007872E /* SBUIController+CategoriesSB.h */,
 			);
@@ -413,7 +411,10 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "~/Documents/iPhone/Headers";
+				HEADER_SEARCH_PATHS = (
+					/var/sdk/usr/include,
+					"~/Documents/iPhone/Headers",
+				);
 				INFOPLIST_EXPAND_BUILD_SETTINGS = NO;
 				PREBINDING = NO;
 				SDKROOT = iphoneos3.0;
@@ -476,7 +477,10 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "~/Documents/iPhone/Headers";
+				HEADER_SEARCH_PATHS = (
+					/var/sdk/usr/include,
+					"~/Documents/iPhone/Headers",
+				);
 				INFOPLIST_EXPAND_BUILD_SETTINGS = NO;
 				PREBINDING = NO;
 				SDKROOT = iphoneos3.0;
@@ -491,7 +495,10 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "~/Documents/iPhone/Headers";
+				HEADER_SEARCH_PATHS = (
+					/var/sdk/usr/include,
+					"~/Documents/iPhone/Headers",
+				);
 				INFOPLIST_EXPAND_BUILD_SETTINGS = NO;
 				PREBINDING = NO;
 				SDKROOT = iphoneos3.0;
