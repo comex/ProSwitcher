@@ -55,6 +55,20 @@
 			<key>defaults</key>
 			<string>com.collab.proswitcher</string>
 			<key>key</key>
+			<string>PSWShowBadges</string>
+			<key>label</key>
+			<string>Show Badges</string>
+			<key>PostNotification</key>
+			<string>com.collab.proswitcher.preferencechanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.collab.proswitcher</string>
+			<key>key</key>
 			<string>PSWShowDock</string>
 			<key>label</key>
 			<string>Show Dock</string>
@@ -86,6 +100,20 @@
 			<string>PSWShowApplicationTitle</string>
 			<key>label</key>
 			<string>Application Title</string>
+			<key>PostNotification</key>
+			<string>com.collab.proswitcher.preferencechanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.collab.proswitcher</string>
+			<key>key</key>
+			<string>PSWThemedIcons</string>
+			<key>label</key>
+			<string>Themed Icons</string>
 			<key>PostNotification</key>
 			<string>com.collab.proswitcher.preferencechanged</string>
 		</dict>
@@ -175,7 +203,7 @@
 			<key>cell</key>
 			<string>PSLinkListCell</string>
 			<key>default</key>
-			<integer>2</integer>
+			<integer>1</integer>
 			<key>defaults</key>
 			<string>com.collab.proswitcher</string>
 			<key>detail</key>

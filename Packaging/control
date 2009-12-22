@@ -5,7 +5,7 @@ Architecture: iphoneos-arm
 Version: 1000.7.3
 Description: Palm Pre-styled application switcher
 Name: ProSwitcher
-Depends: mobilesubstrate, preferenceloader (>= 1.1), libactivator (>= 0.9.1)
+Depends: mobilesubstrate, preferenceloader (>= 1.1), libactivator (>= 0.9.1), backgrounder
 Provides: proswitcher
 Conflicts: com.aaronash.Multifl0w
 Replaces: com.aaronash.Multifl0w
