@@ -68,7 +68,7 @@ static PSWViewController *mainController;
 	view.backgroundColor = GetPreference(PSWDimBackground, BOOL) ? [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.8]:[UIColor clearColor];
 	
 	if (GetPreference(PSWBackgroundStyle, NSInteger) == 1)
-		[[view layer] setContents:(id) [PSWGetCachedSpringBoardResource(@"ProSwitcherBackground") CGImage]];
+		[[view layer] setContents:(id) [PSWImage(@"Background") CGImage]];
 	else
 		[[view layer] setContents:nil];
 	
@@ -93,9 +93,13 @@ static PSWViewController *mainController;
 	snapshotPageView.unfocusedAlpha      = GetPreference(PSWUnfocusedAlpha, float);
 	snapshotPageView.showsPageControl    = GetPreference(PSWShowPageControl, BOOL);
 	snapshotPageView.showsBadges         = GetPreference(PSWShowBadges, BOOL);
-	snapshotPageView.ignoredDisplayIdentifiers = GetPreference(PSWShowDefaultApps, BOOL) ? nil : GetPreference(PSWDefaultApps, id);
+	NSMutableArray *ignored = GetPreference(PSWShowDefaultApps, BOOL) ? [[NSMutableArray alloc] init] : [GetPreference(PSWDefaultApps, id) mutableCopy];
+	if (GetPreference(PSWSpringBoardCard, BOOL) == NO)
+		[ignored addObject:@"com.apple.springboard"];
+	snapshotPageView.ignoredDisplayIdentifiers = ignored;
 	snapshotPageView.pagingEnabled       = GetPreference(PSWPagingEnabled, BOOL);
 	snapshotPageView.themedIcons         = GetPreference(PSWThemedIcons, BOOL);
+	snapshotPageView.allowsZoom          = GetPreference(PSWAllowsZoom, BOOL);
 }
 
 - (void)_reloadPreferences

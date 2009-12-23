@@ -13,6 +13,7 @@
 @synthesize application = _application;
 @synthesize delegate = _delegate;
 @synthesize allowsSwipeToClose = _allowsSwipeToClose;
+@synthesize allowsZoom = _allowsZoom;
 @synthesize screenView = screen;
 
 - (void)snapshot:(UIButton *)snapshot touchUpInside:(UIEvent *)event
@@ -100,9 +101,14 @@
 	
 	CGRect frame = [self frame];
 	CGSize boundingSize;
-	boundingSize.width = frame.size.width - 30.0f;
-	boundingSize.height = frame.size.height - 60.0f;
-	
+	if (isZoomed) {
+		boundingSize.width = frame.size.width;
+		boundingSize.height = frame.size.height - 45.0f;
+	} else {
+		boundingSize.width = frame.size.width - 30.0f;
+		boundingSize.height = frame.size.height - 60.0f;
+	}
+		
 	CGFloat ratioW = boundingSize.width  / imageSize.width;
 	CGFloat ratioH = boundingSize.height / imageSize.height;
 	CGFloat properRatio = (ratioW < ratioH)?ratioW:ratioH;
@@ -112,6 +118,9 @@
 	screenFrame.size.height = properRatio * imageSize.height;
 	screenFrame.origin.x = (NSInteger)((frame.size.width - screenFrame.size.width) / 2.0f);
 	screenFrame.origin.y = (NSInteger)((frame.size.height - screenFrame.size.height) / 2.0f);
+	
+	if (isZoomed)
+		screenFrame.origin.y += 8;
 	
 	if (_showsTitle)
 		screenFrame.origin.y -= 16.0f;
@@ -132,7 +141,9 @@
 		NSString *title = [_application displayName];
 		CGSize textSize = [title sizeWithFont:titleFont];
 		CGRect titleFrame;
-		titleFrame.origin.x = (NSInteger)(([self bounds].size.width - textSize.width) / 2.0f) + 18.0f;
+		titleFrame.origin.x = (NSInteger)(([self bounds].size.width - textSize.width) / 2.0f);
+		if (![title isEqualToString:@"SpringBoard"])
+			titleFrame.origin.x += 18.0f;
 		titleFrame.origin.y = screenFrame.origin.y + screenFrame.size.height + 25.0f - (NSInteger)(textSize.height / 2.0f);
 		titleFrame.size.width = textSize.width;
 		titleFrame.size.height = textSize.height;
@@ -177,7 +188,7 @@
 	}
 	
 	if (_showsCloseButton) {
-		UIImage *closeImage = PSWGetCachedSpringBoardResource(@"closebox");
+		UIImage *closeImage = PSWImage(@"closebox");
 		if (!_closeButton) {
 			_closeButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
 			[_closeButton setBackgroundImage:closeImage forState:UIControlStateNormal];
@@ -311,15 +322,13 @@
 }
 - (void)setThemedIcon:(BOOL)themedIcon
 {
-	if (_themedIcon != themedIcon) {
-		_themedIcon = themedIcon;
+	_themedIcon = themedIcon;
 	
-		// Remove icon view so it gets re-created with the new icon
-		if (_iconView) {
-			[_iconView removeFromSuperview];
-			[_iconView release];
-			_iconView = nil;
-		}
+	// Remove icon view so it gets re-created with the new icon
+	if (_iconView) {
+		[_iconView removeFromSuperview];
+		[_iconView release];
+		_iconView = nil;
 	}
 	
 	[self _relayoutViews];
@@ -334,7 +343,7 @@
 	_showsBadge = showsBadge;
 	[self _relayoutViews];
 }
-		  
+  
 - (CGFloat)roundedCornerRadius
 {
 	return _roundedCornerRadius;
@@ -377,6 +386,27 @@
 	if (!CGRectEqualToRect([self frame], frame)) {
 		[super setFrame:frame];
 		[self _relayoutViews];
+	}
+}
+
+- (void)setZoomed:(BOOL)zoomed
+{
+	if (_allowsZoom) {
+		if (!zoomed && !isZoomed)
+			return;
+		[UIView beginAnimations:nil context:NULL];
+		[UIView setAnimationDuration:0.2f];
+		isZoomed = zoomed;
+		[self _relayoutViews];
+		[UIView commitAnimations];
+	} else {
+		if (isZoomed) {
+			[UIView beginAnimations:nil context:NULL];
+			[UIView setAnimationDuration:0.2f];
+			isZoomed = NO;
+			[self _relayoutViews];
+			[UIView commitAnimations];
+		}
 	}
 }
 
