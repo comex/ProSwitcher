@@ -16,6 +16,7 @@
 @synthesize allowsSwipeToClose = _allowsSwipeToClose;
 @synthesize allowsZoom = _allowsZoom;
 @synthesize screenView = screen;
+@synthesize mayBeLive;
 
 - (void)snapshot:(UIButton *)snapshot touchUpInside:(UIEvent *)event
 {
@@ -129,6 +130,13 @@
 		screenFrame.origin.y -= 16.0f;
 	
 	[screen setFrame:screenFrame];
+	[_dummy setFrame:screenFrame];
+
+	for(CALayer *sublayer in screen.layer.sublayers) {
+		CGAffineTransform transform = CGAffineTransformMakeScale(properRatio, properRatio);
+		sublayer.affineTransform = transform;
+		sublayer.frame = CGRectMake(0, -12, frame.size.width, frame.size.height);
+	}
 	screenY = screenFrame.origin.y;
 	if (_roundedCornerRadius == 0) {
 		[[screen layer] setMask:nil];
@@ -244,19 +252,25 @@
 		_application.delegate = self;
 		self.userInteractionEnabled = YES;
 		self.opaque = NO;
+		mayBeLive = NO;
 		
 		// Add Snapshot layer
-		screen = [UIButton buttonWithType:UIButtonTypeCustom];
+		screen = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
 		CGImageRef snapshot = [application snapshot];
 		[screen setClipsToBounds:YES];
 		[self reloadSnapshot];
 		screen.hidden = NO;
 		
-		[screen addTarget:self action:@selector(snapshot:touchUpInside:) forControlEvents:UIControlEventTouchUpInside];
-		[screen addTarget:self action:@selector(snapshot:didStartDrag:) forControlEvents:UIControlEventTouchDown];
-		[screen addTarget:self action:@selector(snapshot:didDrag:) forControlEvents:UIControlEventTouchDragInside | UIControlEventTouchDragOutside];
-		[screen addTarget:self action:@selector(snapshot:didEndDrag:) forControlEvents:UIControlEventTouchCancel | UIControlEventTouchDragExit | UIControlEventTouchUpOutside | UIControlEventTouchUpInside];
 		[self addSubview:screen];
+		
+		_dummy = [UIButton buttonWithType:UIButtonTypeCustom];
+		[_dummy addTarget:self action:@selector(snapshot:touchUpInside:) forControlEvents:UIControlEventTouchUpInside];
+		[_dummy addTarget:self action:@selector(snapshot:didStartDrag:) forControlEvents:UIControlEventTouchDown];
+		[_dummy addTarget:self action:@selector(snapshot:didDrag:) forControlEvents:UIControlEventTouchDragInside | UIControlEventTouchDragOutside];
+		[_dummy addTarget:self action:@selector(snapshot:didEndDrag:) forControlEvents:UIControlEventTouchCancel | UIControlEventTouchDragExit | UIControlEventTouchUpOutside | UIControlEventTouchUpInside];
+		
+		_dummy.backgroundColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.01];
+		[self addSubview:_dummy];
 		
 		[self _relayoutViews];
 	}
@@ -271,6 +285,9 @@
 	[_closeButton release];
 	[_iconBadge release];
 	[_application release];
+	[screen release];
+	[_dummy release];
+	
     [super dealloc];
 }
 
@@ -280,13 +297,20 @@
 	for(CALayer *sublayer in [screenLayer sublayers]) {
 		[sublayer removeFromSuperlayer];
 	}
-	CALayer *liveLayer = [_application liveLayer];
-	NSLog(@"[][][] %x", liveLayer);
+	CALayer *liveLayer = mayBeLive ? [_application liveLayer] : nil;
+	NSLog(@"[%d] %x", mayBeLive, liveLayer);
 	if(liveLayer) {
 		[screenLayer addSublayer:liveLayer];
 	} else {
 		[screenLayer setContents:(id)[_application snapshot]];
 	}
+}
+
+- (void)doneZoomy
+{
+	mayBeLive = YES;
+	[self reloadSnapshot];
+	[self _relayoutViews];
 }
 
 #pragma mark Properties

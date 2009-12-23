@@ -97,7 +97,7 @@ static NSUInteger defaultImagePassThrough;
 
 - (CGImageRef)snapshot
 {	
-	NSLog(@"I asked for snapshotImage and it is %x", _snapshotImage);
+	NSLog(@"I (%@) asked for snapshotImage and it is %x (surface is %x)", [self displayName], _snapshotImage, _surface);
 #ifdef USE_IOSURFACE
 	if (_snapshotImage)
 		return _snapshotImage;
@@ -111,7 +111,8 @@ static NSUInteger defaultImagePassThrough;
 #ifdef USE_IOSURFACE
 - (void)loadSnapshotFromSurface:(IOSurfaceRef)surface cropInsets:(PSWCropInsets)cropInsets
 {
-	if (surface != _surface) {
+	NSLog(@"(%@) loadsnapshotFromSurface", [self displayName]);
+	if (1) {//surface != _surface) {
 		CGImageRelease(_snapshotImage);
 		if (_surface)
 			CFRelease(_surface);
@@ -163,15 +164,18 @@ static NSUInteger defaultImagePassThrough;
 - (CALayer *)liveLayer
 {
 #ifdef USE_IOSURFACE
-	void *contextHostView = [_application contextHostView];
-	if(!contextHostView) return nil;
-	NSMutableArray *contexts = (NSMutableArray *) *(((int *) contextHostView) + 36/4);
+	if(!_application) return nil;
+	NSMutableArray *contexts = (NSMutableArray *) *(((int *) [_application contextHostView]) + 36/4);
 	if(contexts.count > 0) {
 		//[_application
 		CALayerHost *layerHost = [[MyCALayerHost alloc] init];
 		NSLog(@"My new layerhost is %@", layerHost);
+		layerHost.hidden = YES;
 		layerHost.frame = [[UIScreen mainScreen] bounds];
 		layerHost.contextId = [[contexts objectAtIndex:0] contextId];
+		layerHost.hidden = NO;
+		layerHost.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:0.0 alpha:1.0];
+		[layerHost autorelease];
 		return layerHost;
 	}
 #endif

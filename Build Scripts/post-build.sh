@@ -12,20 +12,19 @@ find "${TARGET_BUILD_DIR}/File System/" -name '._*' -or -name '.DS_Store' -delet
 cp "${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}" "${TARGET_BUILD_DIR}/File System/Library/MobileSubstrate/DynamicLibraries/${EXECUTABLE_NAME}.dylib"
 
 if [ "${PLATFORM_NAME}" == "iphoneos" ]; then
-	if [ -e /Applications/DebMaker.app/Contents/Resources/dpkg-deb ]; then
+
 		mkdir "${TARGET_BUILD_DIR}/File System/DEBIAN"
 		cp "${PROJECT_DIR}/Packaging/control" "${PROJECT_DIR}/Packaging/preinst" "${PROJECT_DIR}/Packaging/prerm" "${TARGET_BUILD_DIR}/File System/DEBIAN/"
 		PACKAGE_NAME=$(grep ^Package: ${PROJECT_DIR}/Packaging/control | cut -d ' ' -f 2)
 		PACKAGE_VERSION=$(grep ^Version: ${PROJECT_DIR}/Packaging/control | cut -d ' ' -f 2)
 		rm -rf "${TARGET_BUILD_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}_iphoneos-arm.deb"
-		/Applications/DebMaker.app/Contents/Resources/dpkg-deb -b "${TARGET_BUILD_DIR}/File System" "${TARGET_BUILD_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}_iphoneos-arm.deb" 2> /dev/null
+		dpkg-deb -b "${TARGET_BUILD_DIR}/File System" "${TARGET_BUILD_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}_iphoneos-arm.deb" 2> /dev/null
 		rm -rf "${PROJECT_DIR}/${PACKAGE_NAME}_latest_iphoneos-arm.deb"
 		ln -s "${TARGET_BUILD_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}_iphoneos-arm.deb" "${PROJECT_DIR}/${PACKAGE_NAME}_latest_iphoneos-arm.deb"
 		if [ -e /Volumes/iPhone/ ]; then
 			rm -rf "/Volumes/iPhone/${PACKAGE_NAME}_latest_iphoneos-arm.deb"
 			cp "${PROJECT_DIR}/${PACKAGE_NAME}_latest_iphoneos-arm.deb" /Volumes/iPhone/
 		fi
-	fi
 fi
 
 if [ "${PLATFORM_NAME}" == "iphonesimulator" ]; then

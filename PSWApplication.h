@@ -10,6 +10,8 @@ typedef struct PSWCropInsets {
 } PSWCropInsets;
 #endif
 
+@class 	SBAppContextHostView;
+
 @protocol PSWApplicationDelegate;
 
 @interface PSWApplication : NSObject {
@@ -23,6 +25,7 @@ typedef struct PSWCropInsets {
 	NSString *_snapshotFilePath;
 	IOSurfaceRef _surface;
 	PSWCropInsets _cropInsets;
+	SBAppContextHostView *_contextHostView;
 #endif
 }
 

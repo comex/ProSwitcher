@@ -21,6 +21,7 @@
 	BOOL _showsBadge;
 	BOOL _focused; 
 	BOOL _allowsZoom;
+	BOOL mayBeLive;
 	UIButton *_closeButton;
 	CALayer *_iconBadge;
 	UILabel *_titleView;
@@ -32,7 +33,8 @@
 	BOOL isInDrag;
 	BOOL isZoomed;
 	CGPoint touchDownPoint;
-	UIButton *screen;
+	UIView *screen;
+	UIButton *_dummy;
 	CGFloat screenY;
 	CGFloat _roundedCornerRadius;
 }
@@ -50,6 +52,7 @@
 @property (nonatomic, assign) BOOL allowsSwipeToClose;
 @property (nonatomic, assign) CGFloat roundedCornerRadius;
 @property (nonatomic, assign) BOOL focused;
+@property (nonatomic, assign) BOOL mayBeLive;
 - (void)setFocused:(BOOL)focused animated:(BOOL)animated;
 @property (nonatomic, readonly) UIView *screenView;
 

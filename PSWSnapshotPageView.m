@@ -228,7 +228,7 @@
 {
 	[self _relayoutViews];
 	for (PSWSnapshotView *view in _snapshotViews)
-		[view redraw];
+		[view reloadSnapshot];
 }
 
 - (PSWApplication *)focusedApplication

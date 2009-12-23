@@ -181,9 +181,19 @@ static PSWViewController *mainController;
 
 #pragma mark Activate
 
-- (void)didFinishActivate
+- (void)didFinishActivate:(NSString *)animationID finished:(NSNumber *)finished context:(PSWSnapshotView *)context
 {
-	isAnimating = NO;
+	NSLog(@"didFinishActivate finished:%@", finished);
+	if([finished boolValue]) {
+		isAnimating = NO;		
+		[self doneZoomy];
+	}
+}
+- (void)doneZoomy
+{
+	for(PSWSnapshotView *view in snapshotPageView.snapshotViews) {
+		[view doneZoomy];
+	}
 }
 - (void)activateWithAnimation:(BOOL)animated
 {
@@ -193,6 +203,8 @@ static PSWViewController *mainController;
 	// Don't double-activate
 	if (isActive)
 		return;
+
+	NSLog(@"activateWithAnimation:%d", animated);
 		
 	// Deactivate CategoriesSB
 	if ([CHSharedInstance(SBUIController) respondsToSelector:@selector(categoriesSBCloseAll)])
@@ -210,6 +222,10 @@ static PSWViewController *mainController;
 	
 	// Restore focused application
 	[snapshotPageView setFocusedApplication:focusedApplication];
+	
+	for(PSWSnapshotView *view in snapshotPageView.snapshotViews) {
+		view.mayBeLive = NO;
+	}	
 	
 	CALayer *scrollLayer = [snapshotPageView.scrollView layer];
 	if (animated) {
@@ -233,10 +249,11 @@ static PSWViewController *mainController;
 	if (animated) {
 		isAnimating = YES;
 		[UIView setAnimationDelegate:self];
-		[UIView setAnimationDidStopSelector:@selector(didFinishActivate)];
+		[UIView setAnimationDidStopSelector:@selector(didFinishActivate:finished:context:)];
 		[UIView commitAnimations];
 	} else {
-		[self didFinishActivate];
+		isAnimating = NO;
+		[self performSelector:@selector(doneZoomy) withObject:nil afterDelay:2.0f];
 	}
 }
 
@@ -252,7 +269,13 @@ static PSWViewController *mainController;
 	// Don't deactivate if we are already deactivated
 	if (!isActive)
 		return;
-	
+
+	for (PSWSnapshotView *view in snapshotPageView.snapshotViews) {
+		NSLog(@"mayBeLive = NO");
+		view.mayBeLive = NO;
+		[view reloadSnapshot];
+	}
+
 	// Save focused applciation
 	[focusedApplication release];
 	focusedApplication = [snapshotPageView.focusedApplication retain];

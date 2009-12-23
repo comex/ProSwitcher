@@ -59,7 +59,6 @@
 		94B298C210C2266400F64150 /* PSWViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSWViewController.m; sourceTree = "<group>"; };
 		94B298C310C2266400F64150 /* PSWViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSWViewController.h; sourceTree = "<group>"; };
 		94EEDE2C10D47425007133E9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		94EEDE3510D474AC007133E9 /* libactivator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libactivator.h; sourceTree = "<group>"; };
 		C441ADEA10E2081B00860249 /* PSWSpringBoardApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSWSpringBoardApplication.h; sourceTree = "<group>"; };
 		C441ADEB10E2081B00860249 /* PSWSpringBoardApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSWSpringBoardApplication.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
