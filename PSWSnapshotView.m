@@ -2,6 +2,7 @@
 
 #import <SpringBoard/SpringBoard.h>
 #import <SpringBoard/SBAppContextHostView.h>
+#import <QuartzCore/CALayer.h>
 
 #import "PSWApplication.h"
 #import "PSWResources.h"
