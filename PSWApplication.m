@@ -19,6 +19,22 @@ CHDeclareClass(SBApplication);
 static NSString *ignoredRelaunchDisplayIdentifier;
 static NSUInteger defaultImagePassThrough;
 
+@interface CALayerHost : CALayer {
+}
+@property(assign) unsigned contextId;
+@end
+
+@interface MyCALayerHost : CALayerHost {
+}
+- (BOOL)containsPoint:(CGPoint)thePoint;
+- (CALayer *)hitTest:(CGPoint)thePoint;
+@end
+
+@implementation MyCALayerHost
+- (BOOL)containsPoint:(CGPoint)thePoint { return NO; }
+- (CALayer *)hitTest:(CGPoint)thePoint { return nil; }
+@end
+
 @implementation PSWApplication
 
 @synthesize displayIdentifier = _displayIdentifier;
@@ -81,6 +97,7 @@ static NSUInteger defaultImagePassThrough;
 
 - (CGImageRef)snapshot
 {	
+	NSLog(@"I asked for snapshotImage and it is %x", _snapshotImage);
 #ifdef USE_IOSURFACE
 	if (_snapshotImage)
 		return _snapshotImage;
@@ -117,7 +134,7 @@ static NSUInteger defaultImagePassThrough;
 				CGDataProviderRelease(dataProvider);
 				CFRetain(surface);
 				_surface = surface;
-				_cropInsets = cropInsets;
+				_cropInsets = cropInsets;				
 			} else {
 				_snapshotImage = NULL;
 				_surface = NULL;
@@ -140,7 +157,27 @@ static NSUInteger defaultImagePassThrough;
 	insets.right = 0;
 	[self loadSnapshotFromSurface:surface cropInsets:insets];
 }
+
 #endif
+
+- (CALayer *)liveLayer
+{
+#ifdef USE_IOSURFACE
+	void *contextHostView = [_application contextHostView];
+	if(!contextHostView) return nil;
+	NSMutableArray *contexts = (NSMutableArray *) *(((int *) contextHostView) + 36/4);
+	if(contexts.count > 0) {
+		//[_application
+		CALayerHost *layerHost = [[MyCALayerHost alloc] init];
+		NSLog(@"My new layerhost is %@", layerHost);
+		layerHost.frame = [[UIScreen mainScreen] bounds];
+		layerHost.contextId = [[contexts objectAtIndex:0] contextId];
+		return layerHost;
+	}
+#endif
+	return nil;
+}
+
 
 - (BOOL)writeSnapshotToDisk
 {
@@ -149,6 +186,7 @@ static NSUInteger defaultImagePassThrough;
 		return NO;
 	// Release image
 	CGImageRelease(_snapshotImage);
+	[_snapshotUIImage release];
 	// Generate filename
 	CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
 	CFStringRef uuidString = CFUUIDCreateString(kCFAllocatorDefault, uuid);

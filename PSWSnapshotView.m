@@ -249,8 +249,7 @@
 		screen = [UIButton buttonWithType:UIButtonTypeCustom];
 		CGImageRef snapshot = [application snapshot];
 		[screen setClipsToBounds:YES];
-		CALayer *layer = [screen layer];
-		[layer setContents:(id) snapshot];
+		[self reloadSnapshot];
 		screen.hidden = NO;
 		
 		[screen addTarget:self action:@selector(snapshot:touchUpInside:) forControlEvents:UIControlEventTouchUpInside];
@@ -277,7 +276,17 @@
 
 - (void)reloadSnapshot
 {
-	[[screen layer] setContents:(id)[_application snapshot]];
+	CALayer *screenLayer = [screen layer];
+	for(CALayer *sublayer in [screenLayer sublayers]) {
+		[sublayer removeFromSuperlayer];
+	}
+	CALayer *liveLayer = [_application liveLayer];
+	NSLog(@"[][][] %x", liveLayer);
+	if(liveLayer) {
+		[screenLayer addSublayer:liveLayer];
+	} else {
+		[screenLayer setContents:(id)[_application snapshot]];
+	}
 }
 
 #pragma mark Properties

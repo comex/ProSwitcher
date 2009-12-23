@@ -19,6 +19,7 @@ typedef struct PSWCropInsets {
 	id<PSWApplicationDelegate> _delegate;
 #ifdef USE_IOSURFACE
 	CGImageRef _snapshotImage;
+	UIImage *_snapshotUIImage;
 	NSString *_snapshotFilePath;
 	IOSurfaceRef _surface;
 	PSWCropInsets _cropInsets;
