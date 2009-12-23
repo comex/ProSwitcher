@@ -33,6 +33,8 @@ CHDeclareClass(SBVoiceControlAlert);
 #define SBActive ([SBWActiveDisplayStack topApplication] == nil)
 #define SBSharedInstance ((SpringBoard *) [UIApplication sharedApplication])
 
+static NSDictionary *preferences = nil;
+
 static NSUInteger disallowIconListScatter;
 static NSUInteger disallowRestoreIconList;
 static NSUInteger disallowIconListScroll;
@@ -428,6 +430,22 @@ CHMethod1(void, SBUIController, restoreIconList, BOOL, unknown)
 		CHSuper1(SBUIController, restoreIconList, unknown);
 }
 
+CHMethod0(void, SBUIController, finishLaunching)
+{
+	NSMutableDictionary* plistDict = [[NSMutableDictionary alloc] initWithContentsOfFile:PSWPreferencesFilePath];
+	
+	BOOL value = [[plistDict objectForKey:@"PSWAlert"] boolValue];
+	if (!value) {
+		UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Welcome to ProSwitcher" message:@"To change settings or to setup launching in *any* app, go to the Settings app. Otherwise, tap the ProSwitcher icon to activate.\n\nProSwitcher is (c) 2009 Ryan Petrich and Grant Paul, released under the LGPL." delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] autorelease];
+		[alert show];
+		[plistDict setObject:[NSNumber numberWithBool:YES] forKey:@"PSWAlert"];
+		PSWWriteBinaryPropertyList(plistDict, PSWPreferencesFilePath);
+	}
+	[plistDict release];
+	
+	CHSuper0(SBUIController, finishLaunching);
+}
+
 #pragma mark SpringBoard
 CHMethod0(void, SpringBoard, _handleMenuButtonEvent)
 {
@@ -441,6 +459,16 @@ CHMethod0(void, SpringBoard, _handleMenuButtonEvent)
 		disallowIconListScroll--;
 		
 		return;
+	} else {
+		if (GetPreference(PSWSingleHomeTap, BOOL)) {
+			[vc activator:nil receiveEvent:nil];
+			
+			// NOTE: _handleMenuButtonEvent is responsible for resetting the home tap count
+            unsigned int *_menuButtonClickCount = &CHIvar(self, _menuButtonClickCount, unsigned int);
+            *_menuButtonClickCount = 0x8000;
+			
+			return;
+		}
 	}
 	
 	CHSuper0(SpringBoard, _handleMenuButtonEvent);
@@ -546,6 +574,7 @@ CHConstructor
 	CHLoadLateClass(SBUIController);
 	CHHook1(SBUIController, restoreIconList);
 	CHHook3(SBUIController, animateApplicationActivation, animateDefaultImage, scatterIcons);
+	CHHook0(SBUIController, finishLaunching);
 	CHLoadLateClass(SBApplicationController);
 	CHLoadLateClass(SBIconModel);
 	CHLoadLateClass(SpringBoard);

@@ -135,6 +135,8 @@
 	scrollViewFrame.origin.y = 0.0;
 	scrollViewFrame.size.width = bounds.size.width - (_snapshotInset + _snapshotInset);
 	scrollViewFrame.size.height = bounds.size.height - 17.0f;
+	if ([_applications count] == 0)
+		scrollViewFrame = CGRectZero;
 	[_scrollView.layer setTransform:CATransform3DIdentity];
 	[_scrollView setFrame:scrollViewFrame];
 	[_scrollView setContentSize:CGSizeMake(scrollViewFrame.size.width * [_applications count] + 1.0f, scrollViewFrame.size.height)];
@@ -284,11 +286,9 @@
 }
 - (void)setShowsCloseButtons:(BOOL)showsCloseButtons
 {
-	if (_showsCloseButtons != showsCloseButtons) {
-		_showsCloseButtons = showsCloseButtons;
-		for (PSWSnapshotView *view in _snapshotViews)
-			[view setShowsCloseButton:showsCloseButtons];
-	}
+	_showsCloseButtons = showsCloseButtons;
+	for (PSWSnapshotView *view in _snapshotViews)
+		[view setShowsCloseButton:_showsCloseButtons];
 }
 
 - (BOOL)showsBadges
@@ -543,7 +543,7 @@
 {
 	UITouch *touch = [touches anyObject];
 	NSInteger tapCount = [touch tapCount];
-	if ([_applications count]) {
+	if ([_applications count] > 0) {
 		CGPoint point = [touch locationInView:self];
 		CGSize size = [self bounds].size;
 		if (point.y < size.height * (4.0f / 5.0f)) {
@@ -563,7 +563,8 @@
 			return;
 		}
 	}
-	if (tapCount == _tapsToActivate)
+	
+	if (tapCount == _tapsToActivate || [_applications count] == 0)
 		if ([_delegate respondsToSelector:@selector(snapshotPageViewShouldExit:)])
 			[_delegate snapshotPageViewShouldExit:self];
 }
