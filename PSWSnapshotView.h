@@ -27,6 +27,7 @@
 	UIImageView *_iconView;
 	
 	BOOL wasSwipedAway;
+	BOOL wasEverSwipedUp;
 	BOOL wasSwipedUp;
 	BOOL isInDrag;
 	BOOL isZoomed;

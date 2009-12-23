@@ -7,7 +7,7 @@
 #import "PSWApplication.h"
 #import "PSWResources.h"
 
-#define kSwipeThreshold 40.0f
+#define kSwipeThreshold 30.0f
 
 @implementation PSWSnapshotView
 
@@ -31,6 +31,7 @@
 	touchDownPoint = [touch locationInView:[self superview]];
 	wasSwipedAway = NO;
 	wasSwipedUp = NO;
+	wasEverSwipedUp = NO;
 	isInDrag = NO;
 }
 
@@ -44,6 +45,7 @@
 		if (vert > 0.0f) {
 			wasSwipedAway = (vert > kSwipeThreshold);
 			wasSwipedUp = YES;
+			wasEverSwipedUp = YES;
 			frame.origin.y = screenY - vert;
 			CGFloat alpha = 1.0f - (vert / 300.0f);
 			theSnapshot.alpha = (alpha > 0.0f) ? alpha:0.0f;
@@ -86,7 +88,7 @@
 		_iconBadge.opacity = 1.0f;
 		[UIView commitAnimations];
 		UITouch *touch = [[event allTouches] anyObject];
-		if (!wasSwipedUp && [touch locationInView:[self superview]].y - touchDownPoint.y > kSwipeThreshold) {
+		if (!wasEverSwipedUp && [touch locationInView:[self superview]].y - touchDownPoint.y > kSwipeThreshold) {
 			if ([_delegate respondsToSelector:@selector(snapshotViewDidSwipeOut:)])
 				[_delegate snapshotViewDidSwipeOut:self];
 		}
