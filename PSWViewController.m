@@ -303,6 +303,7 @@ static PSWViewController *mainController;
 
 - (void)setActive:(BOOL)active animated:(BOOL)animated
 {
+	NSLog(@"setActive:%d animated:%d", active, animated);
 	if (active)
 		[self activateWithAnimation:animated];
 	else

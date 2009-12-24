@@ -294,7 +294,7 @@ static NSUInteger defaultImagePassThrough;
 				// Switching to another app; setup app-to-app
 				[_application setActivationSetting:0x40 flag:YES]; // animateOthersSuspension
 				[_application setActivationSetting:0x20000 flag:YES]; // appToApp
-				[_application setDisplaySetting:0x4 flag:animation]; // animate
+				[_application setDisplaySetting:0x4 flag:animated]; // animate
 				
 				// Activate the target application (will wait for
 				// deactivation of current app)
@@ -371,7 +371,9 @@ CHMethod1(UIImage *, SBApplication, defaultImage, BOOL *, something)
 {
 	if (defaultImagePassThrough == 0) {
 		PSWApplication *app = [[PSWApplicationController sharedInstance] applicationWithDisplayIdentifier:[self displayIdentifier]];
-		if (![app hasNativeBackgrounding]) {
+		if (![app hasNativeBackgrounding] ||
+			[app.displayIdentifier isEqualToString:@"com.apple.mobilemail"] ||
+			[app.displayIdentifier isEqualToString:@"com.apple.mobilesafari"]) {
 			CGImageRef cgResult = [app snapshot];
 			if (cgResult) {
 				if (something)
