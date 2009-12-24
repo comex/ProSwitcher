@@ -294,9 +294,10 @@
 		[sublayer removeFromSuperlayer];
 	}
 	CALayer *liveLayer = mayBeLive ? [_application liveLayer] : nil;
-	NSLog(@"[%d] %x", mayBeLive, liveLayer);
+	//NSLog(@"[%d] %x", mayBeLive, liveLayer);
 	if(liveLayer) {
 		[screenLayer addSublayer:liveLayer];
+		[liveLayer release];
 	} else {
 		[screenLayer setContents:(id)[_application snapshot]];
 	}

@@ -255,7 +255,7 @@ static PSWViewController *mainController;
 		[UIView commitAnimations];
 	} else {
 		isAnimating = NO;
-		[self performSelector:@selector(doneZoomy) withObject:nil afterDelay:2.0f];
+		[self performSelector:@selector(doneZoomy) withObject:nil afterDelay:3.0f];
 	}
 }
 
@@ -273,7 +273,7 @@ static PSWViewController *mainController;
 		return;
 
 	for (PSWSnapshotView *view in snapshotPageView.snapshotViews) {
-		NSLog(@"mayBeLive = NO");
+		//NSLog(@"mayBeLive = NO");
 		view.mayBeLive = NO;
 		[view reloadSnapshot];
 	}

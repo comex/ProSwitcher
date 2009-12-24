@@ -97,7 +97,7 @@ static NSUInteger defaultImagePassThrough;
 
 - (CGImageRef)snapshot
 {	
-	NSLog(@"I (%@) asked for snapshotImage and it is %x (surface is %x)", [self displayName], _snapshotImage, _surface);
+	//NSLog(@"I (%@) asked for snapshotImage and it is %x (surface is %x)", [self displayName], _snapshotImage, _surface);
 #ifdef USE_IOSURFACE
 	if (_snapshotImage)
 		return _snapshotImage;
@@ -174,8 +174,7 @@ static NSUInteger defaultImagePassThrough;
 		layerHost.frame = [[UIScreen mainScreen] bounds];
 		layerHost.contextId = [[contexts objectAtIndex:0] contextId];
 		layerHost.hidden = NO;
-		layerHost.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:0.0 alpha:1.0];
-		[layerHost autorelease];
+		//[layerHost autorelease];
 		return layerHost;
 	}
 #endif
