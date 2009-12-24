@@ -3,6 +3,8 @@
 #include <unistd.h>
 
 #import <SpringBoard/SpringBoard.h>
+#import <SpringBoard/SBApplication.h>
+#import <SpringBoard/SBIconModel.h>
 #import <QuartzCore/QuartzCore.h>
 #import <CaptainHook/CaptainHook.h>
 #import "SpringBoard+Backgrounder.h"
@@ -10,6 +12,11 @@
 #import "PSWDisplayStacks.h"
 #import "PSWApplicationController.h"
 #import "PSWResources.h"
+#import "PSWAppContextHostView.h"
+
+@interface SBApplication (PrivateStuff)
+
+@end
 
 CHDeclareClass(SBApplicationController);
 CHDeclareClass(SBApplicationIcon);
@@ -22,17 +29,6 @@ static NSUInteger defaultImagePassThrough;
 @interface CALayerHost : CALayer {
 }
 @property(assign) unsigned contextId;
-@end
-
-@interface MyCALayerHost : CALayerHost {
-}
-- (BOOL)containsPoint:(CGPoint)thePoint;
-- (CALayer *)hitTest:(CGPoint)thePoint;
-@end
-
-@implementation MyCALayerHost
-- (BOOL)containsPoint:(CGPoint)thePoint { return NO; }
-- (CALayer *)hitTest:(CGPoint)thePoint { return nil; }
 @end
 
 @implementation PSWApplication
@@ -161,18 +157,23 @@ static NSUInteger defaultImagePassThrough;
 
 #endif
 
+- (unsigned int)contextId
+{
+	return sceneContextId([_application contextHostView]);
+}
+
 - (CALayer *)liveLayer
 {
 #ifdef USE_IOSURFACE
 	if(!_application) return nil;
-	NSMutableArray *contexts = (NSMutableArray *) *(((int *) [_application contextHostView]) + 36/4);
-	if(contexts.count > 0) {
+	unsigned int contextId = [self contextId];
+	if(contextId != UINT_MAX) {
 		//[_application
-		CALayerHost *layerHost = [[MyCALayerHost alloc] init];
+		CALayerHost *layerHost = [[CALayerHost alloc] init];
 		NSLog(@"My new layerhost is %@", layerHost);
 		layerHost.hidden = YES;
 		layerHost.frame = [[UIScreen mainScreen] bounds];
-		layerHost.contextId = [[contexts objectAtIndex:0] contextId];
+		layerHost.contextId = contextId;
 		layerHost.hidden = NO;
 		//[layerHost autorelease];
 		return layerHost;
@@ -273,7 +274,7 @@ static NSUInteger defaultImagePassThrough;
 	}	
 }
 
-- (void)activateWithAnimation:(BOOL)animation
+- (void)activateWithAnimation:(BOOL)animated
 {
 	SBApplication *fromApp = [SBWActiveDisplayStack topApplication];
 	NSString *fromIdent = fromApp ? [fromApp displayIdentifier] : @"com.apple.springboard";
@@ -284,7 +285,7 @@ static NSUInteger defaultImagePassThrough;
 		
 		if ([fromIdent isEqualToString:@"com.apple.springboard"]) {
 			// Switching from SpringBoard; simply activate the target app
-			[_application setDisplaySetting:0x4 flag:animation]; // animate (or not)
+			[_application setDisplaySetting:0x4 flag:animated]; // animate (or not)
 			// Activate the target application
 			[SBWPreActivateDisplayStack pushDisplay:_application];
 		} else {

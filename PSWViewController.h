@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "libactivator.h"
 #import "PSWSnapshotPageView.h"
+#import "PSWAppContextHostView.h"
 
 @interface PSWViewController : UIViewController<PSWSnapshotPageViewDelegate, LAListener> {
 @private
@@ -12,6 +13,8 @@
 }
 + (PSWViewController *)sharedInstance;
 
+- (void)refreshSafety;
+- (void)refreshSafetySoon;
 @property (nonatomic, assign, getter=isActive) BOOL active;
 - (void)setActive:(BOOL)active animated:(BOOL)animated;
 @property (nonatomic, readonly) BOOL isAnimating;

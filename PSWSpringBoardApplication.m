@@ -69,9 +69,9 @@ static PSWSpringBoardApplication *sharedSpringBoardApplication = nil;
 	[CHSharedInstance(SpringBoard) relaunchSpringBoard];
 }
 
-- (void)activateWithAnimation:(BOOL)animation
+- (void)activateWithAnimation:(BOOL)animated
 {
-	[[PSWViewController sharedInstance] setActive:NO animated:animation];
+	[[PSWViewController sharedInstance] setActive:NO animated:animated];
 }
 
 - (SBIconBadge *)badgeView

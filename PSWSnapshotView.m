@@ -6,6 +6,7 @@
 
 #import "PSWApplication.h"
 #import "PSWResources.h"
+#import "PSWAppContextHostView.h"
 
 #define kSwipeThreshold 30.0f
 
@@ -16,7 +17,6 @@
 @synthesize allowsSwipeToClose = _allowsSwipeToClose;
 @synthesize allowsZoom = _allowsZoom;
 @synthesize screenView = screen;
-@synthesize mayBeLive;
 
 - (void)snapshot:(UIButton *)snapshot touchUpInside:(UIEvent *)event
 {
@@ -49,13 +49,13 @@
 			wasEverSwipedUp = YES;
 			frame.origin.y = screenY - vert;
 			CGFloat alpha = 1.0f - (vert / 300.0f);
-			theSnapshot.alpha = (alpha > 0.0f) ? alpha:0.0f;
+			screen.alpha = (alpha > 0.0f) ? alpha:0.0f;
 		} else {
 			wasSwipedAway = NO;
 			frame.origin.y = screenY;
-			theSnapshot.alpha = 1.0f;
+			screen.alpha = 1.0f;
 		}		
-		[theSnapshot setFrame:frame];
+		[screen setFrame:frame];
 		if (!isInDrag) {
 			[UIView beginAnimations:nil context:NULL];
 			[UIView setAnimationDuration:0.33f];
@@ -137,6 +137,7 @@
 		sublayer.affineTransform = transform;
 		sublayer.frame = CGRectMake(0, -12, frame.size.width, frame.size.height);
 	}
+
 	screenY = screenFrame.origin.y;
 	if (_roundedCornerRadius == 0) {
 		[[screen layer] setMask:nil];
@@ -248,11 +249,11 @@
 		_application.delegate = self;
 		self.userInteractionEnabled = YES;
 		self.opaque = NO;
-		mayBeLive = NO;
 		
 		// Add Snapshot layer
 		screen = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
-		CGImageRef snapshot = [application snapshot];
+		//CGImageRef snapshot = 
+		[application snapshot];
 		[screen setClipsToBounds:YES];
 		[self reloadSnapshot];
 		screen.hidden = NO;
@@ -287,25 +288,42 @@
     [super dealloc];
 }
 
-- (void)reloadSnapshot
+- (void)reloadSnapshotIfNecessary
+{
+	BOOL wasLive = screen.layer.sublayers.count > 0;
+	BOOL shouldBeLive = _focused && sceneIsSafe([_application contextId]);
+	NSLog(@"(%@) rsin: wasLive=%d shouldBeLive=%d", [_application displayName], wasLive, shouldBeLive);
+	if(shouldBeLive != wasLive) {
+		[self reloadSnapshot:shouldBeLive];
+	}
+	[self setNeedsDisplay];
+}
+
+- (void)reloadSnapshot:(BOOL)shouldBeLive
 {
 	CALayer *screenLayer = [screen layer];
+
 	for(CALayer *sublayer in [screenLayer sublayers]) {
 		[sublayer removeFromSuperlayer];
 	}
-	CALayer *liveLayer = mayBeLive ? [_application liveLayer] : nil;
-	//NSLog(@"[%d] %x", mayBeLive, liveLayer);
+
+	CALayer *liveLayer = shouldBeLive ? [_application liveLayer] : nil;
 	if(liveLayer) {
 		[screenLayer addSublayer:liveLayer];
 		[liveLayer release];
 	} else {
 		[screenLayer setContents:(id)[_application snapshot]];
 	}
+	if(shouldBeLive) [self _relayoutViews];	
+}
+
+- (void)reloadSnapshot
+{
+	[self reloadSnapshot:(_focused && sceneIsSafe([_application contextId]))];
 }
 
 - (void)doneZoomy
 {
-	mayBeLive = YES;
 	[self reloadSnapshot];
 	[self _relayoutViews];
 }
@@ -406,6 +424,7 @@
 	if (animated) {
 		[UIView commitAnimations];
 	}
+	[self reloadSnapshotIfNecessary];
 }
 - (void)setFocused:(BOOL)focused
 {

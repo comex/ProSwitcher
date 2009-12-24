@@ -3,6 +3,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import <SpringBoard/SpringBoard.h>
 #import <SpringBoard/SBAwayController.h>
+#import <SpringBoard/SBIconController.h>
+#import <SpringBoard/SBStatusBarController.h>
+#import <SpringBoard/SBIconModel.h>
 #import <CaptainHook/CaptainHook.h>
 
 #include <dlfcn.h>
@@ -189,15 +192,9 @@ static PSWViewController *mainController;
 	NSLog(@"didFinishActivate finished:%@", finished);
 	if([finished boolValue]) {
 		isAnimating = NO;		
-		[self doneZoomy];
 	}
 }
-- (void)doneZoomy
-{
-	for(PSWSnapshotView *view in snapshotPageView.snapshotViews) {
-		[view doneZoomy];
-	}
-}
+
 - (void)activateWithAnimation:(BOOL)animated
 {
 	// Always reparent view
@@ -226,10 +223,6 @@ static PSWViewController *mainController;
 	// Restore focused application
 	[snapshotPageView setFocusedApplication:focusedApplication];
 	
-	for(PSWSnapshotView *view in snapshotPageView.snapshotViews) {
-		view.mayBeLive = NO;
-	}	
-	
 	CALayer *scrollLayer = [snapshotPageView.scrollView layer];
 	if (animated) {
 		view.alpha = 0.0f;
@@ -256,7 +249,7 @@ static PSWViewController *mainController;
 		[UIView commitAnimations];
 	} else {
 		isAnimating = NO;
-		[self performSelector:@selector(doneZoomy) withObject:nil afterDelay:3.0f];
+		//[self performSelector:@selector(doneZoomy) withObject:nil afterDelay:3.0f];
 	}
 }
 
@@ -272,12 +265,6 @@ static PSWViewController *mainController;
 	// Don't deactivate if we are already deactivated
 	if (!isActive)
 		return;
-
-	for (PSWSnapshotView *view in snapshotPageView.snapshotViews) {
-		//NSLog(@"mayBeLive = NO");
-		view.mayBeLive = NO;
-		[view reloadSnapshot];
-	}
 
 	// Save focused applciation
 	[focusedApplication release];
@@ -406,6 +393,18 @@ static PSWViewController *mainController;
 - (void)_deactivateFromAppActivate
 {
 	[self setActive:NO animated:NO];
+}
+
+- (void)refreshSafety
+{
+	for(PSWSnapshotView *view in snapshotPageView.snapshotViews) {
+		[view reloadSnapshotIfNecessary];
+	}
+}
+
+- (void)refreshSafetySoon
+{
+	[self performSelector:@selector(refreshSafety) withObject:nil afterDelay:1.0f]; // wtf
 }
 
 @end

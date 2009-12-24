@@ -46,6 +46,8 @@ typedef struct PSWCropInsets {
 @property (nonatomic, readonly) BOOL hasNativeBackgrounding;
 @property (nonatomic, readonly) SBIconBadge *badgeView;
 
+- (unsigned int)contextId;
+- (CALayer *)liveLayer;
 #ifdef USE_IOSURFACE
 - (void)loadSnapshotFromSurface:(IOSurfaceRef)surface;
 - (void)loadSnapshotFromSurface:(IOSurfaceRef)surface cropInsets:(PSWCropInsets)cropInsets;

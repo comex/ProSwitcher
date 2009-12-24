@@ -21,7 +21,6 @@
 	BOOL _showsBadge;
 	BOOL _focused; 
 	BOOL _allowsZoom;
-	BOOL mayBeLive;
 	UIButton *_closeButton;
 	CALayer *_iconBadge;
 	UILabel *_titleView;
@@ -52,11 +51,12 @@
 @property (nonatomic, assign) BOOL allowsSwipeToClose;
 @property (nonatomic, assign) CGFloat roundedCornerRadius;
 @property (nonatomic, assign) BOOL focused;
-@property (nonatomic, assign) BOOL mayBeLive;
 - (void)setFocused:(BOOL)focused animated:(BOOL)animated;
 @property (nonatomic, readonly) UIView *screenView;
 
 - (void)redraw;
+- (void)reloadSnapshotIfNecessary;
+- (void)reloadSnapshot:(BOOL)shouldBeLive;
 - (void)reloadSnapshot;
 
 @end
