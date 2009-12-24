@@ -464,6 +464,7 @@ CHMethod1(void, SBDisplayStack, pushDisplay, SBDisplay *, display)
 			}
 		}
 	} else if (self == SBWPreActivateDisplayStack) {
+		NSLog(@"WHY HELLO THERE %@ (%d) (%@)", display, CHIsClass(display, SBApplication), CHClass(SBApplication));
 		if (CHIsClass(display, SBApplication)) {
 			[[PSWViewController sharedInstance] performSelector:@selector(_deactivateFromAppActivate) withObject:nil afterDelay:0.5f];
 		}
@@ -606,7 +607,8 @@ CHConstructor
 	CHHook2(SBSearchView, setShowsKeyboard, animated);
 	CHLoadLateClass(SBVoiceControlAlert);
 	CHHook0(SBVoiceControlAlert, deactivate);
-
+	CHLoadLateClass(SBApplication);
+	
 	// Using late-binding until we get a simulator build for libactivator :(
 	dlopen("/usr/lib/libactivator.dylib", RTLD_LAZY);
 	CHLoadLateClass(LAActivator);

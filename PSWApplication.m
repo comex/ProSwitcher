@@ -56,6 +56,7 @@ static NSUInteger defaultImagePassThrough;
 	if ((self = [super init])) {
 		_application = [[CHSharedInstance(SBApplicationController) applicationWithDisplayIdentifier:displayIdentifier] retain];
 		_displayIdentifier = [displayIdentifier copy];
+		_surface = NULL;
 	}
 	return self;
 }
@@ -65,6 +66,7 @@ static NSUInteger defaultImagePassThrough;
 	if ((self = [super init])) {
 		_application = [application retain];
 		_displayIdentifier = [[application displayIdentifier] copy];
+		_surface = NULL;		
 	}
 	return self;
 }
@@ -93,7 +95,7 @@ static NSUInteger defaultImagePassThrough;
 
 - (CGImageRef)snapshot
 {	
-	//NSLog(@"I (%@) asked for snapshotImage and it is %x (surface is %x)", [self displayName], _snapshotImage, _surface);
+	NSLog(@"I (%@) asked for snapshotImage and it is %x (surface is %x)", [self displayName], _snapshotImage, _surface);
 #ifdef USE_IOSURFACE
 	if (_snapshotImage)
 		return _snapshotImage;
@@ -105,12 +107,33 @@ static NSUInteger defaultImagePassThrough;
 }
 
 #ifdef USE_IOSURFACE
+/*- (void)loadSnapshotFromLayer:(CALayer *)layer	
+{
+	if(!_snapshotImage) {
+		NSLog(@"WTF");
+		return;
+	}
+	int width = CGImageGetWidth(_snapshotImage);
+	int height = CGImageGetHeight(_snapshotImage);
+	
+	CGImageRelease(_snapshotImage);
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();	
+	CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 0, colorSpace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little);
+	CGColorSpaceRelease(colorSpace);
+	CATransform3D oldTransform = layer.transform;
+	layer.transform = CATransform3DIdentity;
+	[layer renderInContext:ctx];
+	layer.transform = oldTransform;
+	_snapshotImage = CGBitmapContextCreateImage(ctx);
+	CGContextRelease(ctx);
+	
+}*/
+
 - (void)loadSnapshotFromSurface:(IOSurfaceRef)surface cropInsets:(PSWCropInsets)cropInsets
 {
-	NSLog(@"(%@) loadsnapshotFromSurface", [self displayName]);
-	if (1) {//surface != _surface) {
-		CGImageRelease(_snapshotImage);
-		if (_surface)
+	NSLog(@"(%@) loadsnapshotFromSurface %x", [self displayName], surface);
+	if (surface) {//surface != _surface) {
+		if (_surface && _surface != surface)
 			CFRelease(_surface);
 		if (_snapshotFilePath) {
 			unlink([_snapshotFilePath UTF8String]);
@@ -121,6 +144,8 @@ static NSUInteger defaultImagePassThrough;
 			int width = IOSurfaceGetWidth(surface) - cropInsets.left - cropInsets.right;
 			int height = IOSurfaceGetHeight(surface) - cropInsets.top - cropInsets.bottom;
 			if (width > 0 && height > 0) {
+				if(_snapshotImage) CGImageRelease(_snapshotImage);
+				NSLog(@"Updating snapshot from surface %x", _surface);
 				uint8_t *baseAddress = IOSurfaceGetBaseAddress(surface);
 				size_t stride = IOSurfaceGetBytesPerRow(surface);
 				baseAddress += cropInsets.left * 4 + stride * cropInsets.top;
@@ -129,8 +154,10 @@ static NSUInteger defaultImagePassThrough;
 				_snapshotImage = CGImageCreate(width, height, 8, 32, stride, colorSpace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little, dataProvider, NULL, false, kCGRenderingIntentDefault);
 				CGColorSpaceRelease(colorSpace);
 				CGDataProviderRelease(dataProvider);
-				CFRetain(surface);
-				_surface = surface;
+				if(_surface != surface) {
+					CFRetain(surface);
+					_surface = surface;
+				}
 				_cropInsets = cropInsets;				
 			} else {
 				_snapshotImage = NULL;
@@ -153,6 +180,11 @@ static NSUInteger defaultImagePassThrough;
 	insets.bottom = 0;
 	insets.right = 0;
 	[self loadSnapshotFromSurface:surface cropInsets:insets];
+}
+
+- (void)loadSnapshotFromDefaultSurface
+{
+	[self loadSnapshotFromSurface:_surface cropInsets:_cropInsets];
 }
 
 #endif
