@@ -8,6 +8,7 @@
 
 #import "PSWApplication.h"
 
+@class CALayer;
 @protocol PSWSnapshotViewDelegate;
 
 @interface PSWSnapshotView : UIView<PSWApplicationDelegate> {

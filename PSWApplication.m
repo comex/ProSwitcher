@@ -126,12 +126,8 @@ extern void lsfl();
 	layer.frame = CGRectMake(0, 0, 320, 480);
 	[((UIView *)[CHSharedInstance(SBUIController) contentView]).layer addSublayer:layer];
 	[layer setValue:@"TVOut" forKey:@"displayName"];	
-	CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();
-	const CGFloat myColor[] = {0.90625, 0.80, 0.80, 1.0};
-	[layer setBackgroundColor:CGColorCreate(rgb, myColor)];
-	CGColorSpaceRelease(rgb);
 	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObject:@"TVOut" forKey:@"displayName"];
-    [dict setObject:[NSNumber numberWithInt:8] forKey:@"bitsPerComponentHint"];	
+	[dict setObject:[NSNumber numberWithInt:8] forKey:@"bitsPerComponentHint"];	
 	CAContext *tvBackgroundContext = [[CAContext localContextWithOptions:dict] retain];
 	[tvBackgroundContext setLevel:5];
 	CALayer *tvBackgroundLayer = [[CALayer layer] retain];
@@ -139,12 +135,10 @@ extern void lsfl();
 	[tvBackgroundContext setLayer:tvBackgroundLayer];
 	[tvBackgroundLayer addSublayer:layer];
 
-	//[layer release];
 	[CATransaction commit];
 	[CATransaction flush];
 	
 	IOSurfaceRef surf = IOSurfaceCreate([UIWindow _ioSurfacePropertyDictionaryForRect:CGRectMake(0, 0, 320, 480)]);
-	NSLog(@"surf=%x", surf);
 	CARenderServerRenderDisplay(0, @"TVOut", surf, 0, 0);
 	[self loadSnapshotFromSurface:surf cropInsets:_cropInsets];
 	CFRelease(surf);
@@ -156,9 +150,7 @@ extern void lsfl();
 	[layer removeFromSuperlayer];
 	[tvBackgroundContext release];
 	[tvBackgroundLayer release];
-	NSLog(@"!");	
 	[layer release];
-	
 }
 
 - (void)loadSnapshotFromSurface:(IOSurfaceRef)surface cropInsets:(PSWCropInsets)cropInsets

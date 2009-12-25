@@ -144,11 +144,8 @@
 	[_pageControl setFrame:CGRectMake(0.0f, self.frame.size.height - 19.0f, self.frame.size.width, 19.0f)];
 	[_pageControl setNumberOfPages:[_applications count]];
 	
-	if (!_showsPageControl)
-		_pageControl.hidden = YES;
-	else
-		_pageControl.hidden = NO;
-	
+	_pageControl.hidden = !_showsPageControl;
+	[self zoomActive];
 	PSWApplication *focusedApplication = [self focusedApplication];
 	scrollViewFrame.origin.x = 0;
 	for (PSWSnapshotView *view in _snapshotViews) {

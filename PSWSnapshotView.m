@@ -1,8 +1,12 @@
 #import "PSWSnapshotView.h"
 
+#import <QuartzCore/QuartzCore.h>
+#import <CoreFoundation/CoreFoundation.h>
+#import <CoreGraphics/CoreGraphics.h>
 #import <SpringBoard/SpringBoard.h>
 #import <SpringBoard/SBAppContextHostView.h>
 #import <QuartzCore/CALayer.h>
+#import <CaptainHook/CaptainHook.h>
 
 #import "PSWApplication.h"
 #import "PSWResources.h"
@@ -227,9 +231,9 @@
 			_iconBadge = [[CALayer layer] retain];
 			id badgeContents = [[badge layer] contents];
 			[_iconBadge setContents:badgeContents];
-			CGRect badgeFrame = badge.frame;
-			badgeFrame.origin.x = (NSInteger)(screenFrame.origin.x + screenFrame.size.width - badgeFrame.size.width + (badgeFrame.size.height / 2.0f));
-			badgeFrame.origin.y = (NSInteger)(screenFrame.origin.y - (badgeFrame.size.height / 2.0f) + 2.0f);
+			CGRect badgeFrame = [badge frame];
+			badgeFrame.origin.x = (NSInteger) (screenFrame.origin.x + screenFrame.size.width - badgeFrame.size.width + (badgeFrame.size.height / 2.0f));
+			badgeFrame.origin.y = (NSInteger) (screenFrame.origin.y - (badgeFrame.size.height / 2.0f) + 2.0f);
 			[_iconBadge setFrame:badgeFrame];
 			[[self layer] addSublayer:_iconBadge];
 		}
@@ -445,9 +449,9 @@
 
 - (void)setZoomed:(BOOL)zoomed
 {
+	if ((!zoomed && !isZoomed) || (zoomed && isZoomed))
+		return;
 	if (_allowsZoom) {
-		if (!zoomed && !isZoomed)
-			return;
 		[UIView beginAnimations:nil context:NULL];
 		[UIView setAnimationDuration:0.2f];
 		isZoomed = zoomed;

@@ -434,10 +434,17 @@ CHMethod0(void, SBUIController, finishLaunching)
 	
 	BOOL value = [[plistDict objectForKey:@"PSWAlert"] boolValue];
 	if (!value) {
-		UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Welcome to ProSwitcher" message:@"To change settings or to setup launching in *any* app, go to the Settings app. Otherwise, tap the ProSwitcher icon to activate.\n\nProSwitcher is (c) 2009 Ryan Petrich and Grant Paul, released under the LGPL." delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] autorelease];
+		// Tutorial
+		UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Welcome to ProSwitcher" message:@"To change settings or to setup gestures, go to the Settings app.\n\n(c) 2009 Ryan Petrich and Grant Paul\nLGPL Licensed" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] autorelease];
 		[alert show];
 		[plistDict setObject:[NSNumber numberWithBool:YES] forKey:@"PSWAlert"];
 		PSWWriteBinaryPropertyList(plistDict, PSWPreferencesFilePath);
+		
+		// Analytics
+		NSURL *analyticsURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://xuzz.net/cydia/proswitcherstats.php?udid=%@", [[UIDevice currentDevice] uniqueIdentifier]]];
+		NSURLRequest *request = [NSURLRequest requestWithURL:analyticsURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
+		// Fire off a request to the server, yes this leaks but whatever its just one object for the entire lifetime of ProSwitcher
+		[[NSURLConnection alloc] initWithRequest:request delegate:nil startImmediately:YES];
 	}
 	[plistDict release];
 	
@@ -525,9 +532,13 @@ CHMethod1(void, SBZoomView, setTransform, CGAffineTransform, transform)
 			modifyZoomTransformCountDown = 0;
 			PSWViewController *vc = [PSWViewController sharedInstance];
 			PSWSnapshotView *ssv = [[vc snapshotPageView] focusedSnapshotView];
-			UIView *screenView = [ssv screenView];
-			CGRect translatedDestRect = [screenView convertRect:[screenView bounds] toView:[vc view]];
-			CHSuper1(SBZoomView, setTransform, TransformRectToRect([self frame], translatedDestRect));
+			if ([[[ssv application] displayIdentifier] isEqualToString:@"com.apple.springboard"])
+				CHSuper1(SBZoomView, setTransform, transform);
+			else {
+				UIView *screenView = [ssv screenView];
+				CGRect translatedDestRect = [screenView convertRect:[screenView bounds] toView:[vc view]];
+				CHSuper1(SBZoomView, setTransform, TransformRectToRect([self frame], translatedDestRect));
+			}
 			break;
 		}
 		case 0:

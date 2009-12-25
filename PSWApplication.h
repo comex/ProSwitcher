@@ -51,7 +51,6 @@ typedef struct PSWCropInsets {
 #ifdef USE_IOSURFACE
 - (void)loadSnapshotFromSurface:(IOSurfaceRef)surface;
 - (void)loadSnapshotFromSurface:(IOSurfaceRef)surface cropInsets:(PSWCropInsets)cropInsets;
-- (void)loadSnapshotFromDefaultSurface;
 #endif
 - (BOOL)writeSnapshotToDisk;
 - (void)exit;
