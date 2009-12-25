@@ -20,6 +20,7 @@
 	BOOL _showsTitles;
 	BOOL _showsCloseButtons;
 	BOOL _showsBadges;
+	BOOL _showsPageControl;	
 	BOOL _allowsZoom;
 	BOOL _allowsSwipeToClose;
 	BOOL _themedIcons;

@@ -5,23 +5,27 @@
 #import <SpringBoard/SpringBoard.h>
 #import <SpringBoard/SBApplication.h>
 #import <SpringBoard/SBIconModel.h>
+#import <SpringBoard/SBUIController.h>
 #import <QuartzCore/QuartzCore.h>
 #import <CaptainHook/CaptainHook.h>
 #import "SpringBoard+Backgrounder.h"
+#import <QuartzCore/CAAnimation.h>
 
 #import "PSWDisplayStacks.h"
 #import "PSWApplicationController.h"
 #import "PSWResources.h"
 #import "PSWAppContextHostView.h"
 
-@interface SBApplication (PrivateStuff)
-
+@interface UIWindow (PrivateStuff)
++ (void *)createIOSurfaceWithContextId:(unsigned)contextId frame:(CGRect)frame;
++(void*)createIOSurfaceWithContextIds:(const unsigned*)contextIds count:(unsigned)count frame:(CGRect)frame;
 @end
 
 CHDeclareClass(SBApplicationController);
 CHDeclareClass(SBApplicationIcon);
 CHDeclareClass(SBIconModel);
 CHDeclareClass(SBApplication);
+CHDeclareClass(SBUIController);
 
 static NSString *ignoredRelaunchDisplayIdentifier;
 static NSUInteger defaultImagePassThrough;
@@ -30,6 +34,9 @@ static NSUInteger defaultImagePassThrough;
 }
 @property(assign) unsigned contextId;
 @end
+
+@class CAWindowServer;
+@class CAContext;
 
 @implementation PSWApplication
 
@@ -105,29 +112,54 @@ static NSUInteger defaultImagePassThrough;
 	defaultImagePassThrough--;
 	return result;
 }
-
+extern void lsfl();
 #ifdef USE_IOSURFACE
-/*- (void)loadSnapshotFromLayer:(CALayer *)layer	
+- (void)loadSnapshotFromLayer:(CALayer *)layer	
 {
-	if(!_snapshotImage) {
-		NSLog(@"WTF");
-		return;
-	}
-	int width = CGImageGetWidth(_snapshotImage);
-	int height = CGImageGetHeight(_snapshotImage);
 	
-	CGImageRelease(_snapshotImage);
-	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();	
-	CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 0, colorSpace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little);
-	CGColorSpaceRelease(colorSpace);
-	CATransform3D oldTransform = layer.transform;
-	layer.transform = CATransform3DIdentity;
-	[layer renderInContext:ctx];
-	layer.transform = oldTransform;
-	_snapshotImage = CGBitmapContextCreateImage(ctx);
-	CGContextRelease(ctx);
+	[CATransaction begin];
+	[CATransaction setValue:(id)kCFBooleanTrue
+				     forKey:kCATransactionDisableActions];
+	[layer retain];
+	[layer removeFromSuperlayer];
+	layer.affineTransform = CGAffineTransformIdentity;
+	layer.frame = CGRectMake(0, 0, 320, 480);
+	[((UIView *)[CHSharedInstance(SBUIController) contentView]).layer addSublayer:layer];
+	[layer setValue:@"TVOut" forKey:@"displayName"];	
+	CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();
+	const CGFloat myColor[] = {0.90625, 0.80, 0.80, 1.0};
+	[layer setBackgroundColor:CGColorCreate(rgb, myColor)];
+	CGColorSpaceRelease(rgb);
+	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObject:@"TVOut" forKey:@"displayName"];
+    [dict setObject:[NSNumber numberWithInt:8] forKey:@"bitsPerComponentHint"];	
+	CAContext *tvBackgroundContext = [[CAContext localContextWithOptions:dict] retain];
+	[tvBackgroundContext setLevel:5];
+	CALayer *tvBackgroundLayer = [[CALayer layer] retain];
 	
-}*/
+	[tvBackgroundContext setLayer:tvBackgroundLayer];
+	[tvBackgroundLayer addSublayer:layer];
+
+	//[layer release];
+	[CATransaction commit];
+	[CATransaction flush];
+	
+	IOSurfaceRef surf = IOSurfaceCreate([UIWindow _ioSurfacePropertyDictionaryForRect:CGRectMake(0, 0, 320, 480)]);
+	NSLog(@"surf=%x", surf);
+	CARenderServerRenderDisplay(0, @"TVOut", surf, 0, 0);
+	[self loadSnapshotFromSurface:surf cropInsets:_cropInsets];
+	CFRelease(surf);
+
+	// Do not remove this part!
+	[layer setHidden:YES];
+	[layer setValue:@"LCD" forKey:@"displayName"];	
+	
+	[layer removeFromSuperlayer];
+	[tvBackgroundContext release];
+	[tvBackgroundLayer release];
+	NSLog(@"!");	
+	[layer release];
+	
+}
 
 - (void)loadSnapshotFromSurface:(IOSurfaceRef)surface cropInsets:(PSWCropInsets)cropInsets
 {
@@ -141,11 +173,12 @@ static NSUInteger defaultImagePassThrough;
 			_snapshotFilePath = nil;
 		}
 		if (surface) {
+			IOSurfaceLock(surface, kIOSurfaceLockReadOnly, NULL);
 			int width = IOSurfaceGetWidth(surface) - cropInsets.left - cropInsets.right;
 			int height = IOSurfaceGetHeight(surface) - cropInsets.top - cropInsets.bottom;
 			if (width > 0 && height > 0) {
 				if(_snapshotImage) CGImageRelease(_snapshotImage);
-				NSLog(@"Updating snapshot from surface %x", _surface);
+				NSLog(@"Updating snapshot from surface %x (seed=%x)", surface, IOSurfaceGetSeed(surface));
 				uint8_t *baseAddress = IOSurfaceGetBaseAddress(surface);
 				size_t stride = IOSurfaceGetBytesPerRow(surface);
 				baseAddress += cropInsets.left * 4 + stride * cropInsets.top;
@@ -159,6 +192,7 @@ static NSUInteger defaultImagePassThrough;
 					_surface = surface;
 				}
 				_cropInsets = cropInsets;				
+				IOSurfaceUnlock(surface, kIOSurfaceLockReadOnly, NULL);				
 			} else {
 				_snapshotImage = NULL;
 				_surface = NULL;
@@ -182,9 +216,30 @@ static NSUInteger defaultImagePassThrough;
 	[self loadSnapshotFromSurface:surface cropInsets:insets];
 }
 
+@class CAWindowServer;
+@class CAWindowServerDisplay;
+
+
+
+struct _CALayer;
+typedef struct _CALayer *CALayerRef;
+
+//#define root_layer _ZN2CA6Render7Context10root_layerEv
+//CALayerRef (*root_layer)(void *) = (void *) 0x185390;
+#include <stdio.h>
 - (void)loadSnapshotFromDefaultSurface
 {
-	[self loadSnapshotFromSurface:_surface cropInsets:_cropInsets];
+	if(!_surface) {
+		NSLog(@"WETF");
+		return;
+	}
+	unsigned cid = [self contextId];
+	NSLog(@"cid is %x", cid);
+/*	
+	void *rc = CARenderContextById(cid);
+	NSLog(@"rc=%x", rc);
+*/
+	
 }
 
 #endif
@@ -432,6 +487,7 @@ CHConstructor {
 	CHLoadLateClass(SBApplicationIcon);
 	CHLoadLateClass(SBIconModel);
 	CHLoadLateClass(SBApplication);
+	CHLoadLateClass(SBUIController);
 	CHHook1(SBApplication, _relaunchAfterAbnormalExit);
 	CHHook0(SBApplication, _relaunchAfterExit);
 	CHHook1(SBApplication, defaultImage);

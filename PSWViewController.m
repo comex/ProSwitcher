@@ -608,7 +608,6 @@ CHConstructor
 	CHHook2(SBSearchView, setShowsKeyboard, animated);
 	CHLoadLateClass(SBVoiceControlAlert);
 	CHHook0(SBVoiceControlAlert, deactivate);
-	CHLoadLateClass(SBApplication);
 	
 	// Using late-binding until we get a simulator build for libactivator :(
 	dlopen("/usr/lib/libactivator.dylib", RTLD_LAZY);

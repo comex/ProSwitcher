@@ -13,6 +13,10 @@
 		7DB8A5B31086D4C100C1FD1D /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DB8A5B21086D4C100C1FD1D /* AudioToolbox.framework */; };
 		7DD43FE710C097C90063020D /* PSWSnapshotPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD43FE610C097C90063020D /* PSWSnapshotPageView.m */; };
 		7DD5643210CA325A00771158 /* PSWSnapshotView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5643110CA325A00771158 /* PSWSnapshotView.m */; };
+		80460F4510E40F4C0093EC64 /* lsfl.m in Sources */ = {isa = PBXBuildFile; fileRef = 80460F4410E40F4C0093EC64 /* lsfl.m */; };
+		80460F6C10E414870093EC64 /* CoreSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80460F6B10E414870093EC64 /* CoreSurface.framework */; };
+		80460F7110E414960093EC64 /* IOMobileFramebuffer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80460F7010E414960093EC64 /* IOMobileFramebuffer.framework */; };
+		80460F7510E414B80093EC64 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80460F7410E414B80093EC64 /* IOKit.framework */; };
 		80864DD310E2F23600A83980 /* PSWAppContextHostView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80864DD210E2F23600A83980 /* PSWAppContextHostView.m */; };
 		942FC5E310CB8DCF006F6990 /* PSWApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 942FC5E210CB8DCF006F6990 /* PSWApplication.m */; };
 		942FC6BC10CB9D1D006F6990 /* PSWApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 942FC6BB10CB9D1D006F6990 /* PSWApplicationController.m */; };
@@ -36,6 +40,10 @@
 		7DD5643010CA325A00771158 /* PSWSnapshotView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSWSnapshotView.h; sourceTree = "<group>"; };
 		7DD5643110CA325A00771158 /* PSWSnapshotView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSWSnapshotView.m; sourceTree = "<group>"; };
 		7DE9723210CDD727001262FC /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		80460F4410E40F4C0093EC64 /* lsfl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = lsfl.m; sourceTree = "<group>"; };
+		80460F6B10E414870093EC64 /* CoreSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSurface.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.2.sdk/System/Library/PrivateFrameworks/CoreSurface.framework; sourceTree = DEVELOPER_DIR; };
+		80460F7010E414960093EC64 /* IOMobileFramebuffer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOMobileFramebuffer.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.2.sdk/System/Library/PrivateFrameworks/IOMobileFramebuffer.framework; sourceTree = DEVELOPER_DIR; };
+		80460F7410E414B80093EC64 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.2.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = DEVELOPER_DIR; };
 		80864DD110E2F23600A83980 /* PSWAppContextHostView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSWAppContextHostView.h; sourceTree = "<group>"; };
 		80864DD210E2F23600A83980 /* PSWAppContextHostView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSWAppContextHostView.m; sourceTree = "<group>"; };
 		940499DF10DE37EC0007872E /* SBUIController+CategoriesSB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SBUIController+CategoriesSB.h"; sourceTree = "<group>"; };
@@ -78,6 +86,9 @@
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				7DB8A5B31086D4C100C1FD1D /* AudioToolbox.framework in Frameworks */,
 				949485F110C1FC3800467E51 /* QuartzCore.framework in Frameworks */,
+				80460F6C10E414870093EC64 /* CoreSurface.framework in Frameworks */,
+				80460F7110E414960093EC64 /* IOMobileFramebuffer.framework in Frameworks */,
+				80460F7510E414B80093EC64 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -105,6 +116,8 @@
 				945742E710E2D7C300CF56B8 /* Resources */,
 				943D541810CCF9750007FAFF /* Packaging */,
 				943D541610CCF8230007FAFF /* Build Scripts */,
+				80460F7010E414960093EC64 /* IOMobileFramebuffer.framework */,
+				80460F7410E414B80093EC64 /* IOKit.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -118,6 +131,7 @@
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
+				80460F6B10E414870093EC64 /* CoreSurface.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -145,6 +159,7 @@
 				7D0200BE10DF52F80059F2C8 /* PSWPreferences.h */,
 				80864DD110E2F23600A83980 /* PSWAppContextHostView.h */,
 				80864DD210E2F23600A83980 /* PSWAppContextHostView.m */,
+				80460F4410E40F4C0093EC64 /* lsfl.m */,
 			);
 			name = Code;
 			sourceTree = "<group>";
@@ -339,6 +354,7 @@
 				942FC77B10CBB8F7006F6990 /* PSWResources.m in Sources */,
 				C441ADEC10E2081B00860249 /* PSWSpringBoardApplication.m in Sources */,
 				80864DD310E2F23600A83980 /* PSWAppContextHostView.m in Sources */,
+				80460F4510E40F4C0093EC64 /* lsfl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,6 +371,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 					"\"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"",
+					"\"$(DEVELOPER_DIR)/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.2.sdk/System/Library/Frameworks\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -395,6 +412,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 					"\"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"",
+					"\"$(DEVELOPER_DIR)/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.2.sdk/System/Library/Frameworks\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -455,6 +473,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 					"\"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"",
+					"\"$(DEVELOPER_DIR)/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.2.sdk/System/Library/Frameworks\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;

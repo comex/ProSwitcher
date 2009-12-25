@@ -292,11 +292,12 @@
 {
 	BOOL wasLive = screen.layer.sublayers.count > 0;
 	BOOL shouldBeLive = _focused && sceneIsSafe([_application contextId]);
-	NSLog(@"(%@) rsin: wasLive=%d shouldBeLive=%d", [_application displayName], wasLive, shouldBeLive);
+	//NSLog(@"(%@) rsin: wasLive=%d shouldBeLive=%d", [_application displayName], wasLive, shouldBeLive);
 	if(shouldBeLive != wasLive) {
 		if(wasLive) {
-			[_application loadSnapshotFromDefaultSurface];
-		}
+			[_application loadSnapshotFromLayer:[screen.layer.sublayers objectAtIndex:0]];
+			//[_application loadSnapshotFromDefaultSurface];
+		}		
 		[self reloadSnapshot:shouldBeLive];
 	}
 	[self setNeedsDisplay];
