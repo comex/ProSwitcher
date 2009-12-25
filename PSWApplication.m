@@ -216,32 +216,6 @@ extern void lsfl();
 	[self loadSnapshotFromSurface:surface cropInsets:insets];
 }
 
-@class CAWindowServer;
-@class CAWindowServerDisplay;
-
-
-
-struct _CALayer;
-typedef struct _CALayer *CALayerRef;
-
-//#define root_layer _ZN2CA6Render7Context10root_layerEv
-//CALayerRef (*root_layer)(void *) = (void *) 0x185390;
-#include <stdio.h>
-- (void)loadSnapshotFromDefaultSurface
-{
-	if(!_surface) {
-		NSLog(@"WETF");
-		return;
-	}
-	unsigned cid = [self contextId];
-	NSLog(@"cid is %x", cid);
-/*	
-	void *rc = CARenderContextById(cid);
-	NSLog(@"rc=%x", rc);
-*/
-	
-}
-
 #endif
 
 - (unsigned int)contextId
